@@ -14,7 +14,7 @@ efnis yfirlit:
 1. þegar maður er að lesa hex þá er grúpað allt í tölur af tveimur hex og svo lesið afturábak 
    þannig talan 00 01 E3 mundi vera skrifuð E3 01 00. frekar ruglandi en maður þarf bara að díla við það.
 
-2. bmp pixle arrray eru lesin þannig að fyrst er teiknað til vinstri svo upp. 
+2. BMP pixle arrray eru lesin þannig að fyrst er teiknað til vinstri svo upp. 
    það þarf líka að setja inn padding þannig að hver vertical layer er margfeldi af 4 í bytes,
    þetta er gott að vita þegar maður er að nota eithvað annað en 32 bit color
 
@@ -65,10 +65,37 @@ efnis yfirlit:
 |    |   |             |
 */
 
+#include <string>
+#include <fstream>
+#include <iostream>
+
+
+/*
+DIB      40
+Header   14
+
+total    54
+
+rest: hæð*(breidd*(bit_color/8)+(4%(breidd*(bit_color/8))))
+eða: hæð*(breidd*3+4%(breidd*3))
+
+
+
+
+*/
 
 
 
 
 
+int main(void){
+    int X1= -2;
+    int X2= 2;
+    int Y1= -2;
+    int Y2= 2;
+    int resX=200;
+    int resY=200;
+    int iter= 7;
+    
 
-
+}
