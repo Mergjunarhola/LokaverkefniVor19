@@ -14,7 +14,7 @@ efnis yfirlit:
 1. þegar maður er að lesa hex þá er grúpað allt í tölur af tveimur hex og svo lesið afturábak 
    þannig talan 00 01 E3 mundi vera skrifuð E3 01 00. frekar ruglandi en maður þarf bara að díla við það.
 
-2. BMP pixle arrray eru lesin þannig að fyrst er teiknað til vinstri svo upp. 
+2. bmp pixle arrray eru lesin þannig að fyrst er teiknað til vinstri svo upp. 
    það þarf líka að setja inn padding þannig að hver vertical layer er margfeldi af 4 í bytes,
    þetta er gott að vita þegar maður er að nota eithvað annað en 32 bit color
 
@@ -65,37 +65,126 @@ efnis yfirlit:
 |    |   |             |
 */
 
-#include <string>
-#include <fstream>
-#include <iostream>
-
-
-/*
-DIB      40
-Header   14
-
-total    54
-
-rest: hæð*(breidd*(bit_color/8)+(4%(breidd*(bit_color/8))))
-eða: hæð*(breidd*3+4%(breidd*3))
-
-
+/*  Lazy enianizer™
+char g[4];
+int lab=12333;
+for(int i = 0;i < 4; i++){
+    g[i]=lab%256;
+    lab=lab/256;
+}
 
 
 */
 
-
-
-
+#include <fstream>
+#include <iostream>
+#include <string>
+using namespace std;
 
 int main(void){
-    int X1= -2;
-    int X2= 2;
-    int Y1= -2;
-    int Y2= 2;
-    int resX=200;
-    int resY=200;
-    int iter= 7;
+    //þetta er til að skrifa allt draslið sem er í BMP útskýringar
+    char BmpDibH[54];
+    int BmpTemp;
+    for(int i = 0; i < 54; i++){
+        BmpDibH[i]=0;
+    }
+    BmpDibH[0]='B';
+    BmpDibH[1]='M';
+    BmpDibH[10]=0x36;
+    BmpDibH[0x0E]=0x28;
+    BmpDibH[0x1A]=1;
+    BmpDibH[0x1C]=0x18;
+    
+    float Ofset=4;
+    float RaX1=-2;
+    float RaX2=RaX1+Ofset;
+    float RaY1=-2;
+    float RaY2=RaY1+Ofset;
+    int iter=30;
+    int ResX=1000;
+    int ResY=1000;
+    int RaSize=ResX*ResY;
+    unsigned char Mapid[RaSize];
+    float staX;
+    float staY;
+    int fjol=0;
+    float Temp;
+    float Xcar;
+    float Ycar;
+    int Maploc;
+    int colors[7]={0x3333FF,0x33FFFF,0x33FF33,0xFFFF33,0xFF3333,0xFF33FF,0x000000};
+
+// til að endian-a stærð og annað
+// ég veit að þetta er super lazy
+    BmpTemp=ResX;
+    for(int i = 0x12;i < 0x16; i++){
+        BmpDibH[i]=BmpTemp%256;
+        BmpTemp=BmpTemp/256;
+    }
+    BmpTemp=ResY;
+    for(int i = 0x16;i < 0x1A; i++){
+        BmpDibH[i]=BmpTemp%256;
+        BmpTemp=BmpTemp/256;
+    }
+    BmpTemp=RaSize*3;
+    for(int i = 0x22;i < 0x26; i++){
+        BmpDibH[i]=BmpTemp%256;
+        BmpTemp=BmpTemp/256;
+    }
+    BmpTemp=(RaSize*3)+54;
+    for(int i = 2;i < 6; i++){
+        BmpDibH[i]=BmpTemp%256;
+        BmpTemp=BmpTemp/256;
+    }
+
+
+    for (int y = 0; y < ResY; y++)
+    {
+        for (int x = 0; x < ResX; x++)
+        {
+            staX=(x/((float)ResX/(RaX2-RaX1)))+RaX1;
+            staY=(y/((float)ResY/(RaY2-RaY1)))+RaY1;
+            Xcar=0;
+            Ycar=0;
+            fjol=0;
+            while ((fjol<iter)&&(Xcar*Xcar+Ycar*Ycar<=4))
+            {
+                Temp=Xcar*Xcar - Ycar*Ycar + staX;
+                Ycar= 2*Ycar*Xcar + staY;
+                Xcar=Temp;
+                fjol++;
+            }
+            //cout<<fjol;
+            Maploc=y*ResY+x;
+            Mapid[Maploc]=fjol;
+        }
+        
+    }
+    
+    ofstream out;
+    out.open("Set77.bmp");
+    for (int i = 0; i < 54; i++)
+    {
+        out<<BmpDibH[i];
+    }
+
+    for (int x = 0; x < RaSize; x++)
+    {
+        //cout<<Mapid;
+        
+        fjol=Mapid[x]%6;
+        if (Mapid[x]==iter){fjol=6;}
+        Maploc=colors[fjol];
+        for(int i = 0;i < 0x3; i++){
+        out<<(char)(Maploc%256);
+        Maploc=Maploc/256;
+        }
+    }
     
 
+
+    out.close();
+    return 0;
 }
+
+
