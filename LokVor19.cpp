@@ -81,6 +81,85 @@ for(int i = 0;i < 4; i++){
 #include <string>
 using namespace std;
 
+
+class FractalMap
+{
+protected:
+    float Ofset=4;
+    float RaX=-2;
+    float RaY=-2;
+    int iter=30;
+    unsigned int ResX=1000;
+    unsigned int ResY=1000;
+    unsigned int RaSize=ResX*ResY;
+    float staX;
+    float staY;
+    int fjol=0;
+    float Temp;
+    float Xcar;
+    float Ycar;
+    int Maploc;
+public:
+    FractalMap(){
+        //cout<<"Fractal Type object created"<<endl;
+    };
+    void Zoom(float Zoomage){
+        RaX=RaX+(Ofset-Ofset/Zoomage)/2;
+        RaY=RaY+(Ofset-Ofset/Zoomage)/2;
+        Ofset=Ofset-Ofset/Zoomage;
+    };
+    void Hlidra(float X,float Y){
+        RaX=RaX+Ofset*X;
+        RaY=RaY+Ofset*Y;
+    };
+
+};
+
+class Mandelbrot: public FractalMap{
+    public:
+        unsigned int FormulaOutput(int X,int Y){
+            staX=(X/((float)ResX/(Ofset)))+RaX;
+            staY=(Y/((float)ResY/(Ofset)))+RaY;
+            Xcar=0;
+            Ycar=0;
+            fjol=0;
+            while ((fjol<iter)&&(Xcar*Xcar+Ycar*Ycar<=4))
+            {
+                Temp=Xcar*Xcar - Ycar*Ycar + staX;
+                Ycar= 2*Ycar*Xcar + staY;
+                Xcar=Temp;
+                fjol++;
+            }
+            return fjol;
+        };
+};
+
+class Julian: public FractalMap{
+    private:
+        float CX=-0.8;
+        float CY=0.156;
+    public:
+        void Change_C(float X,float Y){
+            CX=X;
+            CY=Y;
+        };
+        unsigned int FormulaOutput(int X,int Y){
+            staX=(X/((float)ResX/(Ofset)))+RaX;
+            staY=(Y/((float)ResY/(Ofset)))+RaY;
+            Xcar=staX;
+            Ycar=staY;
+            fjol=0;
+            while ((fjol<iter)&&(Xcar*Xcar+Ycar*Ycar<=4))
+            {
+                Temp=Xcar*Xcar - Ycar*Ycar+ CX;
+                Ycar= 2*Ycar*Xcar + CY;
+                Xcar=Temp;
+                fjol++;
+            }
+            return fjol;
+        };
+};
+
 int main(void){
     //þetta er til að skrifa allt draslið sem er í BMP útskýringar
     char BmpDibH[54];
@@ -95,23 +174,12 @@ int main(void){
     BmpDibH[0x1A]=1;
     BmpDibH[0x1C]=0x18;
     
-    float Ofset=4;
-    float RaX1=-2;
-    float RaX2=RaX1+Ofset;
-    float RaY1=-2;
-    float RaY2=RaY1+Ofset;
+    
     int iter=30;
     int ResX=1000;
     int ResY=1000;
     int RaSize=ResX*ResY;
-    unsigned char Mapid[RaSize];
-    float staX;
-    float staY;
-    int fjol=0;
-    float Temp;
-    float Xcar;
-    float Ycar;
-    int Maploc;
+    unsigned int ColorCar;
     int colors[7]={0x3333FF,0x33FFFF,0x33FF33,0xFFFF33,0xFF3333,0xFF33FF,0x000000};
 
 // til að endian-a stærð og annað
@@ -137,51 +205,39 @@ int main(void){
         BmpTemp=BmpTemp/256;
     }
 
-
-    for (int y = 0; y < ResY; y++)
-    {
-        for (int x = 0; x < ResX; x++)
-        {
-            staX=(x/((float)ResX/(RaX2-RaX1)))+RaX1;
-            staY=(y/((float)ResY/(RaY2-RaY1)))+RaY1;
-            Xcar=0;
-            Ycar=0;
-            fjol=0;
-            while ((fjol<iter)&&(Xcar*Xcar+Ycar*Ycar<=4))
-            {
-                Temp=Xcar*Xcar - Ycar*Ycar + staX;
-                Ycar= 2*Ycar*Xcar + staY;
-                Xcar=Temp;
-                fjol++;
-            }
-            //cout<<fjol;
-            Maploc=y*ResY+x;
-            Mapid[Maploc]=fjol;
-        }
-        
-    }
-    
     ofstream out;
-    out.open("Set77.bmp");
+    out.open("julian1.bmp");
     for (int i = 0; i < 54; i++)
     {
         out<<BmpDibH[i];
     }
 
-    for (int x = 0; x < RaSize; x++)
+
+    Julian Mapid;
+
+
+
+
+    
+    for (int y = 0; y < ResY; y++)
     {
-        //cout<<Mapid;
+        for (int x = 0; x < ResX; x++)
+        {
+            ColorCar=Mapid.FormulaOutput(x,y);
+        if (ColorCar==iter){ColorCar=6;}
+        else{ColorCar=ColorCar%6;}
         
-        fjol=Mapid[x]%6;
-        if (Mapid[x]==iter){fjol=6;}
-        Maploc=colors[fjol];
+        ColorCar=colors[ColorCar];
         for(int i = 0;i < 0x3; i++){
-        out<<(char)(Maploc%256);
-        Maploc=Maploc/256;
+        out<<(char)(ColorCar%256);
+        ColorCar=ColorCar/256;
         }
+            
+        }
+        
     }
     
-
+    
 
     out.close();
     return 0;

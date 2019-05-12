@@ -26,7 +26,7 @@ int main(void){
     std::ofstream out;
     out.open("ananas");
     for(int i = 0;i < 4; i++){
-        out<<g[i];
+        out<<' ';
     }
     out.close();
     return 0;
