@@ -79,88 +79,21 @@ for(int i = 0;i < 4; i++){
 #include <fstream>
 #include <iostream>
 #include <string>
+#include "LokClas.h"
 using namespace std;
 
 
-class FractalMap
-{
-protected:
-    float Ofset=4;
-    float RaX=-2;
-    float RaY=-2;
-    int iter=30;
-    unsigned int ResX=400;
-    unsigned int ResY=400;
-    unsigned int RaSize=ResX*ResY;
-    float staX;
-    float staY;
-    int fjol=0;
-    float Temp;
-    float Xcar;
-    float Ycar;
-    int Maploc;
-public:
-    FractalMap(){
-        //cout<<"Fractal Type object created"<<endl;
-    };
-    void Zoom(float Zoomage){
-        RaX=RaX+(Ofset-Ofset/Zoomage)/2;
-        RaY=RaY+(Ofset-Ofset/Zoomage)/2;
-        Ofset=Ofset-Ofset/Zoomage;
-    };
-    void Hlidra(float X,float Y){
-        RaX=RaX+Ofset*X;
-        RaY=RaY+Ofset*Y;
-    };
 
-};
-
-class Mandelbrot: public FractalMap{
-    public:
-        unsigned int FormulaOutput(int X,int Y){
-            staX=(X/((float)ResX/(Ofset)))+RaX;
-            staY=(Y/((float)ResY/(Ofset)))+RaY;
-            Xcar=0;
-            Ycar=0;
-            fjol=0;
-            while ((fjol<iter)&&(Xcar*Xcar+Ycar*Ycar<=4))
-            {
-                Temp=Xcar*Xcar - Ycar*Ycar + staX;
-                Ycar= 2*Ycar*Xcar + staY;
-                Xcar=Temp;
-                fjol++;
-            }
-            return fjol;
-        };
-};
-
-class Julian: public FractalMap{
-    private:
-        float CX=-0.8;
-        float CY=0.156;
-    public:
-        void Change_C(float X,float Y){
-            CX=X;
-            CY=Y;
-        };
-        unsigned int FormulaOutput(int X,int Y){
-            staX=(X/((float)ResX/(Ofset)))+RaX;
-            staY=(Y/((float)ResY/(Ofset)))+RaY;
-            Xcar=staX;
-            Ycar=staY;
-            fjol=0;
-            while ((fjol<iter)&&(Xcar*Xcar+Ycar*Ycar<=4))
-            {
-                Temp=Xcar*Xcar - Ycar*Ycar+ CX;
-                Ycar= 2*Ycar*Xcar + CY;
-                Xcar=Temp;
-                fjol++;
-            }
-            return fjol;
-        };
-};
 
 int main(void){
+    
+    int iter=30;
+    int Res=1000;
+    unsigned int ColorCar;
+    int colors[7]={0x3333FF,0x33FFFF,0x33FF33,0xFFFF33,0xFF3333,0xFF33FF,0x000000};
+
+
+
     //þetta er til að skrifa allt draslið sem er í BMP útskýringar
     char BmpDibH[54];
     int BmpTemp;
@@ -173,56 +106,50 @@ int main(void){
     BmpDibH[0x0E]=0x28;
     BmpDibH[0x1A]=1;
     BmpDibH[0x1C]=0x18;
-    
-    
-    int iter=30;
-    int ResX=400;
-    int ResY=400;
-    int RaSize=ResX*ResY;
-    unsigned int ColorCar;
-    int colors[7]={0x3333FF,0x33FFFF,0x33FF33,0xFFFF33,0xFF3333,0xFF33FF,0x000000};
 
 // til að endian-a stærð og annað
 // ég veit að þetta er super lazy
-    BmpTemp=ResX;
+    BmpTemp=Res;
     for(int i = 0x12;i < 0x16; i++){
         BmpDibH[i]=BmpTemp%256;
         BmpTemp=BmpTemp/256;
     }
-    BmpTemp=ResY;
+    BmpTemp=Res;
     for(int i = 0x16;i < 0x1A; i++){
         BmpDibH[i]=BmpTemp%256;
         BmpTemp=BmpTemp/256;
     }
-    BmpTemp=RaSize*3;
+    BmpTemp=Res*Res*3;
     for(int i = 0x22;i < 0x26; i++){
         BmpDibH[i]=BmpTemp%256;
         BmpTemp=BmpTemp/256;
     }
-    BmpTemp=(RaSize*3)+54;
+    BmpTemp=(Res*Res*3)+54;
     for(int i = 2;i < 6; i++){
         BmpDibH[i]=BmpTemp%256;
         BmpTemp=BmpTemp/256;
     }
 
+
+
     ofstream out;
-    out.open("Jtest1.bmp",ios::binary);
+    out.open("Mtest2.bmp",ios::binary);
     for (int i = 0; i < 54; i++)
     {
-        cout<<BmpDibH[i];
         out<<(char)BmpDibH[i];
     }
 
 
-    Julian Mapid;
-
+    Mandelbrot Mapid;
+    Mapid.setResIt(Res,iter);
+    Mapid.Zoom(1.25);
 
 
 
     
-    for (int y = 0; y < ResY; y++)
+    for (int y = 0; y < Res; y++)
     {
-        for (int x = 0; x < ResX; x++)
+        for (int x = 0; x < Res; x++)
         {
             ColorCar=Mapid.FormulaOutput(x,y);
         if (ColorCar==iter){ColorCar=6;}
@@ -230,7 +157,7 @@ int main(void){
         
         ColorCar=colors[ColorCar];
         for(int i = 0;i < 0x3; i++){
-        out<<(unsigned char)(ColorCar%256);
+        out<<(char)(ColorCar%256);
         ColorCar=ColorCar/256;
         }
             
