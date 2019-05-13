@@ -89,8 +89,8 @@ protected:
     float RaX=-2;
     float RaY=-2;
     int iter=30;
-    unsigned int ResX=1000;
-    unsigned int ResY=1000;
+    unsigned int ResX=400;
+    unsigned int ResY=400;
     unsigned int RaSize=ResX*ResY;
     float staX;
     float staY;
@@ -176,8 +176,8 @@ int main(void){
     
     
     int iter=30;
-    int ResX=30;
-    int ResY=30;
+    int ResX=400;
+    int ResY=400;
     int RaSize=ResX*ResY;
     unsigned int ColorCar;
     int colors[7]={0x3333FF,0x33FFFF,0x33FF33,0xFFFF33,0xFF3333,0xFF33FF,0x000000};
@@ -206,7 +206,7 @@ int main(void){
     }
 
     ofstream out;
-    out.open("julian1.bmp");
+    out.open("Jtest1.bmp",ios::binary);
     for (int i = 0; i < 54; i++)
     {
         cout<<BmpDibH[i];
@@ -230,7 +230,7 @@ int main(void){
         
         ColorCar=colors[ColorCar];
         for(int i = 0;i < 0x3; i++){
-        out<<(char)(ColorCar%256);
+        out<<(unsigned char)(ColorCar%256);
         ColorCar=ColorCar/256;
         }
             
