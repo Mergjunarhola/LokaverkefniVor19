@@ -101,10 +101,10 @@ int main(void){
     float RaY1=-2;
     float RaY2=RaY1+Ofset;
     int iter=30;
-    int ResX=1000;
-    int ResY=1000;
+    int ResX=30;
+    int ResY=30;
     int RaSize=ResX*ResY;
-    unsigned char Mapid[RaSize];
+    unsigned char Mapid[900];
     float staX;
     float staY;
     int fjol=0;
@@ -162,10 +162,11 @@ int main(void){
     }
     
     ofstream out;
-    out.open("Set77.bmp");
+    out.open("Set37.bmp");
     for (int i = 0; i < 54; i++)
     {
-        out<<BmpDibH[i];
+        cout<<BmpDibH[i];
+        out<<(char)BmpDibH[i];
     }
 
     for (int x = 0; x < RaSize; x++)
