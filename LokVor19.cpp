@@ -86,9 +86,24 @@ using namespace std;
 
 
 int main(void){
-    
-    int iter=30;
-    int Res=1000;
+    string SkjalNafn="Mtest3.bmp";// settu inn nafn á skjalinu hér. það þarf að enda með BMP
+    int iter=30; // þetta sér um hve oft það iteratar í gegnum formúluna fyrir annað hvort Julian eða mandelbrot set-ið
+    int Res=1000; //þetta verður gæðin á myndini í pixlum. þessi tala þarf að vera margfeldi af 4 til að það virki.
+    //              svo er hægt að fara upp í 50000 nema það tekur svolítin tíma
+    Mandelbrot Mapid;// hér er hægt að breyta í annað hvort julian eða mandelbrot bara með því að breyta object típuni eins og: Julian Mapid;
+    Mapid.setResIt(Res,iter);//setur resolution og iterations
+    Mapid.Zoom(2);//hægt er að zooma með þessu, minna en 1 er út og meira en 1 er inn
+    //Mapid.Change_C(0.4,1) þetta er bara notað í julian setinu og er til þess að breyta C gildinu.
+    Mapid.Hlidra(0.2,-0.4);// þetta er notað til að hliðra sjónarhornið eins og maður vill
+    //Mapid.FormulaOutput(X,Y) þetta er notað í forlúppuni til að teikna þetta
+    Mapid.Zoom(4);
+    Mapid.Hlidra(-0.1,0.2);
+
+
+
+
+
+
     unsigned int ColorCar;
     int colors[7]={0x3333FF,0x33FFFF,0x33FF33,0xFFFF33,0xFF3333,0xFF33FF,0x000000};
 
@@ -133,16 +148,14 @@ int main(void){
 
 
     ofstream out;
-    out.open("Mtest2.bmp",ios::binary);
+    out.open(SkjalNafn,ios::binary);
     for (int i = 0; i < 54; i++)
     {
         out<<(char)BmpDibH[i];
     }
 
 
-    Mandelbrot Mapid;
-    Mapid.setResIt(Res,iter);
-    Mapid.Zoom(1.25);
+    
 
 
 
