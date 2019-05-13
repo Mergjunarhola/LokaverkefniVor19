@@ -5,8 +5,9 @@
 /*      Efnis Yfirlit
 þetta forrit verður til þess að koma framm formúlum í myndrænt form
 efnis yfirlit:
-    Hex Útskýring   : Lína 13
-    BMP Útskýringar : Lína 22
+    Hex Útskýring      : Lína 13
+    BMP Útskýringar    : Lína 22
+    kóði sem má breyta : Lína 90
 */
 
 
@@ -91,6 +92,8 @@ int main(void){
     int Res=1000; //þetta verður gæðin á myndini í pixlum. þessi tala þarf að vera margfeldi af 4 til að það virki.
     //              svo er hægt að fara upp í 50000 nema það tekur svolítin tíma
     Mandelbrot Mapid;// hér er hægt að breyta í annað hvort julian eða mandelbrot bara með því að breyta object típuni eins og: Julian Mapid;
+    // það er svo langt síðan að ég lærði þetta að ég er eiginlega ekki með gögn en þetta er kanski gott video til að skilja þetta aðeins
+    // https://www.youtube.com/watch?v=NGMRB4O922I
     Mapid.setResIt(Res,iter);//setur resolution og iterations
     Mapid.Zoom(2);//hægt er að zooma með þessu, minna en 1 er út og meira en 1 er inn
     //Mapid.Change_C(0.4,1) þetta er bara notað í julian setinu og er til þess að breyta C gildinu.
