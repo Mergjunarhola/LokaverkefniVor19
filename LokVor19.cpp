@@ -101,68 +101,16 @@ int main(void){
     //Mapid.FormulaOutput(X,Y) þetta er notað í forlúppuni til að teikna þetta
     Mapid.Zoom(4);
     Mapid.Hlidra(-0.1,0.2);
-
-
-
-
-
-
     unsigned int ColorCar;
     int colors[7]={0x3333FF,0x33FFFF,0x33FF33,0xFFFF33,0xFF3333,0xFF33FF,0x000000};
-
-
-
     //þetta er til að skrifa allt draslið sem er í BMP útskýringar
-    char BmpDibH[54];
-    int BmpTemp;
-    for(int i = 0; i < 54; i++){
-        BmpDibH[i]=0;
-    }
-    BmpDibH[0]='B';
-    BmpDibH[1]='M';
-    BmpDibH[10]=0x36;
-    BmpDibH[0x0E]=0x28;
-    BmpDibH[0x1A]=1;
-    BmpDibH[0x1C]=0x18;
-
-// til að endian-a stærð og annað
-// ég veit að þetta er super lazy
-    BmpTemp=Res;
-    for(int i = 0x12;i < 0x16; i++){
-        BmpDibH[i]=BmpTemp%256;
-        BmpTemp=BmpTemp/256;
-    }
-    BmpTemp=Res;
-    for(int i = 0x16;i < 0x1A; i++){
-        BmpDibH[i]=BmpTemp%256;
-        BmpTemp=BmpTemp/256;
-    }
-    BmpTemp=Res*Res*3;
-    for(int i = 0x22;i < 0x26; i++){
-        BmpDibH[i]=BmpTemp%256;
-        BmpTemp=BmpTemp/256;
-    }
-    BmpTemp=(Res*Res*3)+54;
-    for(int i = 2;i < 6; i++){
-        BmpDibH[i]=BmpTemp%256;
-        BmpTemp=BmpTemp/256;
-    }
-
-
-
+    BmpH BmpDib=BmpH(Res);
     ofstream out;
     out.open(SkjalNafn,ios::binary);
     for (int i = 0; i < 54; i++)
     {
-        out<<(char)BmpDibH[i];
+        out<<(char)BmpDib.GetSpecific(i);
     }
-
-
-    
-
-
-
-    
     for (int y = 0; y < Res; y++)
     {
         for (int x = 0; x < Res; x++)
@@ -180,9 +128,6 @@ int main(void){
         }
         
     }
-    
-    
-
     out.close();
     return 0;
 }

@@ -1,7 +1,0 @@
-1. Little endianizer™
-   
-   "little endian" tölur eru venjulega lesnar eins og þú mundir spegla þær.
-   þannig gott væri að hafa function til að gera þetta fyrir mig
-   þannig að ég þarf að modelusa með 256,65536 og 16777216 til að fá tölunar
-
-   def (hextala, )

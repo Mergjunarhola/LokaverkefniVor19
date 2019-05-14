@@ -6,7 +6,7 @@ protected:
     float RaX=-2;
     float RaY=-2;
     int iter=30;
-    unsigned int Res=400;
+    unsigned int Res=1000;
     unsigned int RaSize=Res*Res;
     float staX;
     float staY;
@@ -78,4 +78,59 @@ class Julian: public FractalMap{
             }
             return fjol;
         };
+};
+
+
+
+class BmpH{
+    private:
+        char BmpDibH[54];
+        
+    public:
+
+        BmpH(unsigned int Res){
+            
+            for(int i = 0; i < 54; i++){
+                this->BmpDibH[i]=0;
+            }
+            this->BmpDibH[0]='B';
+            this->BmpDibH[1]='M';
+            this->BmpDibH[10]=0x36;
+            this->BmpDibH[0x0E]=0x28;
+            this->BmpDibH[0x1A]=1;
+            this->BmpDibH[0x1C]=0x18;
+            this->ChRes(Res);
+
+            // til að endian-a stærð og annað
+            // ég veit að þetta er super lazy
+            
+        }
+        void ChRes(unsigned int Res){
+            unsigned int BmpTemp;
+            BmpTemp=Res;
+            for(int i = 0x12;i < 0x16; i++){
+                this->BmpDibH[i]=BmpTemp%256;
+                BmpTemp=BmpTemp/256;
+            }
+            BmpTemp=Res;
+            for(int i = 0x16;i < 0x1A; i++){
+                this->BmpDibH[i]=BmpTemp%256;
+                BmpTemp=BmpTemp/256;
+            }
+            BmpTemp=Res*Res*3;
+            for(int i = 0x22;i < 0x26; i++){
+                this->BmpDibH[i]=BmpTemp%256;
+                BmpTemp=BmpTemp/256;
+            }
+            BmpTemp=(Res*Res*3)+54;
+            for(int i = 2;i < 6; i++){
+                this->BmpDibH[i]=BmpTemp%256;
+                BmpTemp=BmpTemp/256;
+            }
+        }
+        char* GetArray(void){
+            char* P= this->BmpDibH;
+            return P;
+        }
+        char GetSpecific(int x){return this->BmpDibH[x];}
 };
